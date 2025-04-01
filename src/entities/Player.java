@@ -18,11 +18,11 @@ import utils.LoadSave;
 public class Player extends Entity {
 
 	private BufferedImage[][] animations;
-	private int aniTick, aniIndex, aniSpeed = 30;
+	private int aniTick, aniIndex, aniSpeed = 25;
 	private int playerAction = IDLE;
 	private boolean up, down, left, right, jump;
 	private boolean moving = false, attacking = false;
-	private float playerSpeed = 1.5f;
+	private float playerSpeed = 1.0f * Game.SCALE;
 	private int[][] lvlData;
 	private float xDrawOffset = 21 * Game.SCALE;
 	private float yDrawOffset = 4* Game.SCALE;
@@ -39,7 +39,7 @@ public class Player extends Entity {
 		
 		super(x, y, width, height);
 		loadAnimations();
-		initHitbox(x, y, 20*Game.SCALE, 28*Game.SCALE);
+		initHitbox(x, y, (int) (20*Game.SCALE), (int) (27*Game.SCALE));
 		
 	}
 
@@ -49,9 +49,9 @@ public class Player extends Entity {
 		setAnimation();
 	}
 	
-	public void render(Graphics g) {
-		g.drawImage(animations[playerAction][aniIndex], (int)(hitbox.x - xDrawOffset), (int)(hitbox.y - yDrawOffset), width, height, null);
-		drawHitbox(g);
+	public void render(Graphics g, int lvlOffset) {
+		g.drawImage(animations[playerAction][aniIndex], (int)(hitbox.x - xDrawOffset - lvlOffset), (int)(hitbox.y - yDrawOffset), width, height, null);
+		drawHitbox(g, lvlOffset);
 	}
 	
 	
@@ -64,8 +64,14 @@ public class Player extends Entity {
 			jump();
 		}
 		
-		if (!left && !right && !inAir) {
-			return;
+//		if (!left && !right && !inAir) {
+//			return;
+//		}
+		
+		if(!inAir) {
+			if((!left && !right) || (left && right)) {
+				return;
+			}
 		}
 		
 		float xSpeed = 0;
